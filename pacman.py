@@ -91,7 +91,9 @@ def world_print():
         print()
 
 #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
-
+if __name__ == '__main__':
+    world_generate()
+    world_print()
 #loop
     #input
     #state
