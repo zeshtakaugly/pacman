@@ -22,7 +22,7 @@ class GameObj:
         self.type = gtype
 
 default = GameObj((0, 0), (0, 0), '\u2591', GType.default)
-pacman = GameObj((0, 0), (0, -1), 'e', GType.pacman)
+pacman = GameObj((1, 18), (0, -1), 'e', GType.pacman)
 walls = list()
 ghosts = list()
 dots = list()
