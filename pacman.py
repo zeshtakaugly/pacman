@@ -21,7 +21,8 @@ class GameObj:
         self.sprite = sprite
         self.type = gtype
 
-
+default = GameObj((0, 0), (0, 0), '\u2591', GType.default)
+pacman = GameObj((0, 0), (0, -1), 'e', GType.pacman)
 walls = list()
 ghosts = list()
 dots = list()
@@ -75,26 +76,68 @@ ghosts.append(GameObj((18, 18), (0, -1), "@", GType.ghost))
 ghosts.append(GameObj((1, 1), (1, 0), "@", GType.ghost))
 ghosts.append(GameObj((5, 14), (-1, 0), "@", GType.ghost))
 
-world = [['\u2591' for i in range(20)] for j in range(20)]
+for i in range(1, 19):
+    walls.append(GameObj((1, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 1), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((18, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 18), (0, 0), '\u00B0', GType.dot))
+
+for i in range(3, 17):
+    walls.append(GameObj((3, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 3), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((16, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 16), (0, 0), '\u00B0', GType.dot))
+
+for i in range(5, 15):
+    walls.append(GameObj((5, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 5), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((14, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 14), (0, 0), '\u00B0', GType.dot))
+
+for i in range(7, 13):
+    walls.append(GameObj((7, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 7), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((12, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 12), (0, 0), '\u00B0', GType.dot))
+
+for i in range(9, 11):
+    walls.append(GameObj((9, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 9), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((10, i), (0, 0), '\u00B0', GType.dot))
+    walls.append(GameObj((i, 10), (0, 0), '\u00B0', GType.dot))
+
+world = [[list() for i in range(20)] for j in range(20)]
 
 def world_generate():
-    for o in walls:
-        world[o.position[1]][o.position[0]] = o.sprite
+    global world
+
+    world[pacman.position[1]][pacman.position[0]].append(pacman)
 
     for o in ghosts:
-        world[o.position[1]][o.position[0]] = o.sprite
+        world[o.position[1]][o.position[0]].append(o)
+
+    for o in walls:
+        world[o.position[1]][o.position[0]].append(o)
+
+    for o in dots:
+        world[o.position[1]][o.position[0]].append(o)
+
+    for i in range(0, 20):
+        for j in range(0, 20):
+            world[i][j].append(default)
 
 def world_print():
     for i in range(20):
         for j in range(20):
-            print(world[i][j], end='')
+            print(world[i][j][0].sprite, end='')
         print()
 
 #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
+
 if __name__ == '__main__':
     world_generate()
     world_print()
 #loop
-    #input
-    #state
-    #print
+#input
+#state
+#print
