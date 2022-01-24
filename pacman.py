@@ -5,9 +5,8 @@ class GType(enum.Enum):
     default = -1
     pacman = 0
     ghost = 1
-    path = 2
-    wall = 3
-    dot = 4
+    wall = 2
+    dot = 3
 
 
 class GameObj:
@@ -78,16 +77,20 @@ ghosts.append(GameObj((5, 14), (-1, 0), "@", GType.ghost))
 
 world = [['\u2591' for i in range(20)] for j in range(20)]
 
-for o in walls:
-    world[o.position[0]][o.position[1]] = o.sprite
+def world_generate():
+    for o in walls:
+        world[o.position[1]][o.position[0]] = o.sprite
 
-for o in ghosts:
-    world[o.position[0]][o.position[1]] = o.sprite
+    for o in ghosts:
+        world[o.position[1]][o.position[0]] = o.sprite
 
-for i in range(20):
-    for j in range(20):
-        print(world[i][j], end='')
-    print()
+def world_print():
+    for i in range(20):
+        for j in range(20):
+            print(world[i][j], end='')
+        print()
+
+#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
 
 #loop
     #input
