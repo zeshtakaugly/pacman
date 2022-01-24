@@ -1,6 +1,11 @@
 import enum
+import os
+import random
+import time
+import msvcrt
 
-
+key_input = ''
+score = 0
 class GType(enum.Enum):
     default = -1
     pacman = 0
@@ -8,6 +13,11 @@ class GType(enum.Enum):
     wall = 2
     dot = 3
 
+def clearConsole():
+    command = 'clear'
+    if os.name in ('nt', 'dos'):
+        command = 'cls'
+    os.system(command)
 
 class GameObj:
     type = GType.default
@@ -77,50 +87,50 @@ ghosts.append(GameObj((1, 1), (1, 0), "@", GType.ghost))
 ghosts.append(GameObj((5, 14), (-1, 0), "@", GType.ghost))
 
 for i in range(1, 19):
-    walls.append(GameObj((1, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 1), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((18, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 18), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((1, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 1), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((18, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 18), (0, 0), '\u00B0', GType.dot))
 
 for i in range(3, 17):
-    walls.append(GameObj((3, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 3), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((16, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 16), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((3, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 3), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((16, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 16), (0, 0), '\u00B0', GType.dot))
 
 for i in range(5, 15):
-    walls.append(GameObj((5, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 5), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((14, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 14), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((5, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 5), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((14, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 14), (0, 0), '\u00B0', GType.dot))
 
 for i in range(7, 13):
-    walls.append(GameObj((7, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 7), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((12, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 12), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((7, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 7), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((12, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 12), (0, 0), '\u00B0', GType.dot))
 
 for i in range(9, 11):
-    walls.append(GameObj((9, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 9), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((10, i), (0, 0), '\u00B0', GType.dot))
-    walls.append(GameObj((i, 10), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((9, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 9), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((10, i), (0, 0), '\u00B0', GType.dot))
+    dots.append(GameObj((i, 10), (0, 0), '\u00B0', GType.dot))
 
 world = [[list() for i in range(20)] for j in range(20)]
 
 def world_generate():
     global world
-
-    world[pacman.position[1]][pacman.position[0]].append(pacman)
+    world = [[list() for i in range(20)] for j in range(20)]
+    world[pacman.position[0]][pacman.position[1]].append(pacman)
 
     for o in ghosts:
-        world[o.position[1]][o.position[0]].append(o)
+        world[o.position[0]][o.position[1]].append(o)
 
     for o in walls:
-        world[o.position[1]][o.position[0]].append(o)
+        world[o.position[0]][o.position[1]].append(o)
 
     for o in dots:
-        world[o.position[1]][o.position[0]].append(o)
+        world[o.position[0]][o.position[1]].append(o)
 
     for i in range(0, 20):
         for j in range(0, 20):
@@ -131,12 +141,73 @@ def world_print():
         for j in range(20):
             print(world[i][j][0].sprite, end='')
         print()
+    print("Score = {0}".format(score))
 
-#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
+def state_update():
+    global score
+    for o in ghosts:
+        flag = False
+        for ow in world[o.position[0]+o.direction[0]][o.position[1]+o.direction[1]]:
+            if ow.type == GType.wall:
+                flag = True
+        while flag or o.direction[0] == o.direction[1] or o.direction[0]+o.direction[1] == 0:
+            o.direction = (random.randrange(-1, 2), random.randrange(-1, 2))
+            for ow in world[o.position[0]+o.direction[0]][o.position[1]+o.direction[1]]:
+                if ow.type == GType.wall:
+                    flag = True
+                    break
+                else:
+                    flag = False
+        o.position = (o.position[0] + o.direction[0], o.position[1] + o.direction[1])
+
+    c = 0
+    for o in world[pacman.position[0]][pacman.position[1]]:
+        if o.type == GType.ghost:
+            return False
+        if o.type == GType.dot:
+            dots.remove(o)
+            score = score+1
+        c = c + 1
+
+    if key_input == 'w' and world[pacman.position[0]-1][pacman.position[1]][0].type != GType.wall:
+        pacman.direction = (-1, 0)
+    elif key_input == 's' and world[pacman.position[0]+1][pacman.position[1]][0].type != GType.wall:
+        pacman.direction = (1, 0)
+    elif key_input == 'd' and world[pacman.position[0]][pacman.position[1]+1][0].type != GType.wall:
+        pacman.direction = (0, 1)
+    elif key_input == 'a' and world[pacman.position[0]][pacman.position[1]-1][0].type != GType.wall:
+        pacman.direction = (0, -1)
+
+    if world[pacman.position[0]+pacman.direction[0]][pacman.position[1]+pacman.direction[1]][0].type == GType.wall:
+        pacman.direction = (0, 0)
+    else:
+        pacman.position = (pacman.position[0] + pacman.direction[0], pacman.position[1] + pacman.direction[1])
+
 
 if __name__ == '__main__':
+    win = False
     world_generate()
     world_print()
+    while True:
+
+        if msvcrt.kbhit():
+            key_input = msvcrt.getch().decode('utf-8')
+
+        clearConsole()
+
+        if state_update() == False:
+            break
+        if not dots:
+            win = True
+            break
+        world_generate()
+        world_print()
+
+        time.sleep(0.1)
+    if win:
+        print("HooooooooooooooooRAAAYYYyyy!!")
+    else:
+        print("LoooooSerrrrr!!!")
 #loop
 #input
 #state
